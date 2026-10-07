@@ -1,0 +1,52 @@
+benchmark: binary_classification_messy_v1
+task:
+  type: binary_classification
+  target: target
+planted_issues:
+  identifier_columns:
+  - customer_id
+  target_leakage:
+  - cancellation_date
+  constant_columns:
+  - country
+  near_constant_columns:
+  - account_status
+  noise_columns:
+  - random_noise
+  invalid_numeric_values:
+    age:
+      expected_range:
+      - 18
+      - 80
+      planted_values:
+      - -5
+      - 999
+  dirty_categories:
+    state:
+      CA:
+      - CA
+      - California
+      - ca
+      - ' CA '
+    subscription_plan:
+      Plus:
+      - Plus
+      - plus
+      - PLUS
+  mixed_numeric_formats:
+  - income
+  mixed_date_formats:
+  - signup_date
+  missing_values:
+  - income
+  - subscription_plan
+  non_random_missingness:
+  - income
+  extreme_outliers:
+  - monthly_spend
+  duplicate_rows: 120
+modeling_expectations:
+  avoid_accuracy_as_primary_metric: true
+  requires_baseline: true
+  requires_holdout_set: true
+  requires_leakage_check: true
