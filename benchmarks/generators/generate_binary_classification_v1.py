@@ -9,9 +9,8 @@ N_ROWS = 20_000
 
 ROOT = Path(__file__).resolve().parents[2]
 DATASET_PATH = ROOT / "benchmarks/datasets/binary_classification_messy_v1.csv"
-GROUND_TRUTH_PATH = (
-    ROOT / "benchmarks/ground_truth/binary_classification_messy_v1.yaml"
-)
+GROUND_TRUTH_PATH = ROOT / "benchmarks/ground_truth/binary_classification_messy_v1.yaml"
+
 
 def generate_clean_dataset(rng: np.random.Generator) -> pd.DataFrame:
     """Generate a realistic binary-classification dataset."""
@@ -38,9 +37,8 @@ def generate_clean_dataset(rng: np.random.Generator) -> pd.DataFrame:
 
     income = np.maximum(rng.normal(85_000, 30_000, n), 20_000)
 
-    signup_date = (
-        pd.Timestamp("2018-01-01")
-        + pd.to_timedelta(rng.integers(0, 2500, n), unit="D")
+    signup_date = pd.Timestamp("2018-01-01") + pd.to_timedelta(
+        rng.integers(0, 2500, n), unit="D"
     )
 
     logit = (
@@ -74,7 +72,11 @@ def generate_clean_dataset(rng: np.random.Generator) -> pd.DataFrame:
 
     return df
 
-def inject_data_quality_issues(df: pd.DataFrame, rng: np.random.Generator,) -> pd.DataFrame:
+
+def inject_data_quality_issues(
+    df: pd.DataFrame,
+    rng: np.random.Generator,
+) -> pd.DataFrame:
     """Plant known issues so EvidentML can be evaluated objectively."""
 
     df = df.copy()
@@ -84,12 +86,11 @@ def inject_data_quality_issues(df: pd.DataFrame, rng: np.random.Generator,) -> p
     # 1. Leakage feature
     df["cancellation_date"] = pd.NaT
     positive_mask = df["target"] == 1
-    df.loc[positive_mask, "cancellation_date"] = (
-        pd.Timestamp("2026-01-01")
-        + pd.to_timedelta(
-            rng.integers(0, 180, positive_mask.sum()),
-            unit="D",
-        )
+    df.loc[positive_mask, "cancellation_date"] = pd.Timestamp(
+        "2026-01-01"
+    ) + pd.to_timedelta(
+        rng.integers(0, 180, positive_mask.sum()),
+        unit="D",
     )
 
     # 2. Constant feature
@@ -190,6 +191,7 @@ def inject_data_quality_issues(df: pd.DataFrame, rng: np.random.Generator,) -> p
 
     return df
 
+
 def write_ground_truth():
     """Create hidden benchmark answer key."""
 
@@ -244,6 +246,7 @@ def write_ground_truth():
             sort_keys=False,
         )
 
+
 def main():
     rng = np.random.default_rng(RANDOM_SEED)
 
@@ -262,6 +265,7 @@ def main():
     print(f"Positive rate: {messy_df['target'].mean():.3f}")
     print(f"Dataset: {DATASET_PATH}")
     print(f"Ground truth: {GROUND_TRUTH_PATH}")
+
 
 if __name__ == "__main__":
     main()

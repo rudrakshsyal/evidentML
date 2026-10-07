@@ -29,7 +29,7 @@ across different software versions.
 | `benchmarks/ground_truth/binary_classification_messy_v1.yaml` | Expected issue families, affected columns, selected values/mappings, and modeling expectations |
 | `benchmarks/ground_truth/churn_messy_v1.yaml` | Empty legacy scaffold; not an additional benchmark or answer key |
 | `src/evidentml/data_engine/profiler.py` | Current structural measurements |
-| `tests/test_profiler.py` | Small unit test for dimensions and duplicate counting |
+| `tests/test_profiler.py` | Unit test for dimensions, dtype, identifier and categorical inference |
 
 Paths in this table are relative to the repository root. The generator is the
 source for injection mechanics; the YAML is the evaluation contract. Changes to
@@ -40,7 +40,7 @@ either must be reviewed together.
 Counts below describe the original 20,000 rows **before duplication**. Copies can
 increase affected-row counts, and different issue families can overlap.
 
-| Case | How it is represented | Intended evaluation target (unless noted, not implemented) |
+| Case | How it is represented | Intended evaluation target (coverage described below) |
 | --- | --- | --- |
 | Identifier | `customer_id` is unique before duplication | Recognize an identifier candidate; avoid treating uniqueness alone as proof to drop it |
 | Target leakage | `cancellation_date` exists exactly when `target == 1` | Flag perfect target-dependent missingness and investigate availability at prediction time |
@@ -79,11 +79,21 @@ to remove every listed column.
 
 ## Actual coverage and limitations
 
-At this stage, `profile_dataset(df)` returns `rows`, `columns`, `duplicate_rows`,
-and `column_names`. Its unit test asserts dimensions and duplicate count on a
-three-row fixture. No automated benchmark evaluator or tests asserting the full
-planted inventory exist yet. `quality.py`, `cleaning.py`, and the evidence schemas
-are empty. Generating a case does not demonstrate that EvidentML detects it.
+The profiler now reports dataset dimensions and duplicate counts plus per-column
+types, missingness, uniqueness, dominant-value fractions, and numeric summaries.
+The deterministic auditor implements duplicates, constant/near-constant columns,
+missingness, possible identifiers, numeric-string parsing, case/whitespace
+variants, robust numeric outliers, and binary-target leakage candidates. The
+Rich example renders these findings with severity and column context.
+
+Four tests cover basic profiling, duplicate/constant/missingness findings, one
+extreme numeric outlier, and missingness-based leakage. See the
+[README](../README.md) for exact behavior, thresholds, and remaining test gaps.
+Cleaning and evidence schemas remain placeholders; no automated benchmark scorer
+or full-inventory assertion suite exists. Implementing a heuristic does not
+establish complete detection of a planted case. In particular, semantic age
+constraints, state-name equivalence, mixed-date-format auditing, noise utility,
+and non-random missingness analysis remain outside the implemented checks.
 
 - Coverage is one seeded synthetic CSV for binary classification. There is no
   demonstrated coverage for Parquet, regression, multiclass, forecasting,
@@ -127,17 +137,12 @@ are empty. Generating a case does not demonstrate that EvidentML detects it.
    and remaining gaps. Mark coverage as implemented only after a passing test;
    retain failures as documented gaps rather than silently claiming support.
 
-## Next step: extend `profiler.py`
+## Next steps
 
-Preserve the existing `profile_dataset(df)` behavior while adding JSON-serializable
-per-column measurements: observed dtype, null count/fraction, distinct non-null
-count, most-common values/frequencies, and numeric summaries for numeric columns.
-Accept an optional target column for class counts and proportions. Report observed
-types before any coercion; mixed income strings should remain visible.
-
-Add focused tests for mixed types, missing and all-null columns, empty inputs,
-constant/near-constant columns, target validation, serialization, and unchanged
-input data. Exercise the committed benchmark to confirm dimensions, duplicates,
-and missingness, without importing ground truth into the profiler. Defer domain
-judgments, leakage decisions, normalization, imputation, and feature removal to
-the subsequent auditor/cleaner stages, using the profile as evidence.
+Finish leakage validation with direct-copy and categorical-mapping cases, clean
+controls, imbalanced targets, and sparse groups. Add explicit domain constraints
+and semantic checks, then evaluator-only benchmark scoring and structured evidence.
+Begin cleaning only with justified transformations and before/after validation.
+Expand profiler edge-case coverage, including empty/all-null inputs and unchanged
+input data, as these capabilities are exercised. Keep the answer key out of the
+profiler, auditor, cleaner, and future agent inputs.

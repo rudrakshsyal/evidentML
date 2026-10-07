@@ -57,6 +57,7 @@ def infer_semantic_type(series: pd.Series) -> str:
 
     return "unknown"
 
+
 def profile_column(series: pd.Series) -> dict[str, Any]:
     """Create a structural profile for a single column."""
 
@@ -66,30 +67,20 @@ def profile_column(series: pd.Series) -> dict[str, Any]:
 
     unique_count = series.nunique(dropna=True)
 
-    unique_ratio = (
-        unique_count / non_null_count
-        if non_null_count > 0
-        else 0.0
-    )
+    unique_ratio = unique_count / non_null_count if non_null_count > 0 else 0.0
 
     value_counts = series.value_counts(
         normalize=True,
         dropna=True,
     )
 
-    dominant_value_pct = (
-        float(value_counts.iloc[0])
-        if not value_counts.empty
-        else None
-    )
+    dominant_value_pct = float(value_counts.iloc[0]) if not value_counts.empty else None
 
     profile: dict[str, Any] = {
         "physical_dtype": str(series.dtype),
         "semantic_type": infer_semantic_type(series),
         "null_count": int(null_count),
-        "null_pct": float(null_count / total_rows)
-        if total_rows > 0
-        else 0.0,
+        "null_pct": float(null_count / total_rows) if total_rows > 0 else 0.0,
         "unique_count": int(unique_count),
         "unique_ratio": float(unique_ratio),
         "dominant_value_pct": dominant_value_pct,
@@ -99,22 +90,15 @@ def profile_column(series: pd.Series) -> dict[str, Any]:
     if is_numeric_dtype(series):
         profile.update(
             {
-                "min": float(series.min())
-                if series.notna().any()
-                else None,
-                "max": float(series.max())
-                if series.notna().any()
-                else None,
-                "mean": float(series.mean())
-                if series.notna().any()
-                else None,
-                "median": float(series.median())
-                if series.notna().any()
-                else None,
+                "min": float(series.min()) if series.notna().any() else None,
+                "max": float(series.max()) if series.notna().any() else None,
+                "mean": float(series.mean()) if series.notna().any() else None,
+                "median": float(series.median()) if series.notna().any() else None,
             }
         )
 
     return profile
+
 
 def profile_dataset(df: pd.DataFrame) -> dict[str, Any]:
     """
@@ -130,7 +114,6 @@ def profile_dataset(df: pd.DataFrame) -> dict[str, Any]:
         "duplicate_rows": int(df.duplicated().sum()),
         "column_names": df.columns.tolist(),
         "columns_profile": {
-            column: profile_column(df[column])
-            for column in df.columns
+            column: profile_column(df[column]) for column in df.columns
         },
     }

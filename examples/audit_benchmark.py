@@ -1,23 +1,20 @@
 import pandas as pd
-
 from rich.console import Console
 from rich.table import Table
 
 from evidentml.data_engine.profiler import profile_dataset
 from evidentml.data_engine.quality import audit_data_quality
 
-
 console = Console()
 
-df = pd.read_csv(
-    "benchmarks/datasets/binary_classification_messy_v1.csv"
-)
+df = pd.read_csv("benchmarks/datasets/binary_classification_messy_v1.csv")
 
 profile = profile_dataset(df)
 
 audit = audit_data_quality(
     df=df,
     profile=profile,
+    target="target",
 )
 
 
@@ -62,7 +59,6 @@ issues = sorted(
 
 
 for issue in issues:
-
     table.add_row(
         issue["severity"].upper(),
         issue["type"],
