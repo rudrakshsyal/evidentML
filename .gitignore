@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# EvidentML generated artifacts
+mlruns/
+artifacts/
+__pycache__/
+*.pyc
+.DS_Store

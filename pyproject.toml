@@ -1,0 +1,28 @@
+[project]
+name = "evidentml"
+version = "0.1.0"
+description = "Evidence-driven autonomous data science and ML engineering."
+requires-python = ">=3.12,<3.13"
+
+dependencies = [
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "scipy",
+    "pandera",
+    "pydantic",
+    "pyarrow",
+    "matplotlib",
+    "mlflow",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
