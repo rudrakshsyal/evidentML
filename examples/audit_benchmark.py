@@ -11,12 +11,19 @@ df = pd.read_csv("benchmarks/datasets/binary_classification_messy_v1.csv")
 
 profile = profile_dataset(df)
 
+domain_rules = {
+    "age": {
+        "min": 18,
+        "max": 80,
+    }
+}
+
 audit = audit_data_quality(
     df=df,
     profile=profile,
     target="target",
+    domain_rules=domain_rules,
 )
-
 
 console.print()
 console.rule("[bold]EvidentML Data Quality Audit[/bold]")
@@ -65,6 +72,5 @@ for issue in issues:
         issue.get("column", "—"),
         issue["message"],
     )
-
 
 console.print(table)

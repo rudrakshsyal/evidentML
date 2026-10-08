@@ -5,14 +5,10 @@ from typing import Any
 
 import pandas as pd
 
+from evidentml.data_engine.domain import validate_domain_rules
 
-def create_issue(
-    issue_type: str,
-    severity: str,
-    message: str,
-    column: str | None = None,
-    evidence: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+
+def create_issue(issue_type: str,severity: str,message: str,column: str | None = None,evidence: dict[str, Any] | None = None,) -> dict[str, Any]:
     """
     Create a standardized data-quality issue.
 
@@ -525,6 +521,7 @@ def audit_data_quality(
     df: pd.DataFrame,
     profile: dict[str, Any],
     target: str | None = None,
+    domain_rules: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """
     Run deterministic data-quality checks.
@@ -549,6 +546,14 @@ def audit_data_quality(
             detect_target_leakage_candidates(
                 df=df,
                 target=target,
+            )
+        )
+    
+    if domain_rules:
+        issues.extend(
+            validate_domain_rules(
+                df=df,
+                rules=domain_rules,
             )
         )
 

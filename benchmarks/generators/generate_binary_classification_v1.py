@@ -231,6 +231,60 @@ def write_ground_truth():
             "extreme_outliers": ["monthly_spend"],
             "duplicate_rows": 120,
         },
+        "expected_findings": [
+            {
+                "type": "duplicate_rows",
+                "column": None,
+            },
+            {
+                "type": "constant_column",
+                "column": "country",
+            },
+            {
+                "type": "near_constant_column",
+                "column": "account_status",
+            },
+            {
+                "type": "possible_identifier",
+                "column": "customer_id",
+            },
+            {
+                "type": "mixed_numeric_format",
+                "column": "income",
+            },
+            {
+                "type": "dirty_categorical_variants",
+                "column": "state",
+            },
+            {
+                "type": "dirty_categorical_variants",
+                "column": "subscription_plan",
+            },
+            {
+                "type": "extreme_numeric_outliers",
+                "column": "age",
+            },
+            {
+                "type": "extreme_numeric_outliers",
+                "column": "monthly_spend",
+            },
+            {
+                "type": "missing_values",
+                "column": "income",
+            },
+            {
+                "type": "missing_values",
+                "column": "subscription_plan",
+            },
+            {
+                "type": "missing_values",
+                "column": "cancellation_date",
+            },
+            {
+                "type": "possible_target_leakage",
+                "column": "cancellation_date",
+            },
+        ],
         "modeling_expectations": {
             "avoid_accuracy_as_primary_metric": True,
             "requires_baseline": True,
